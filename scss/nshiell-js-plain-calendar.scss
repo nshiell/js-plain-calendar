@@ -1,0 +1,219 @@
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+
+@font-face {
+    font-family: modernpics;
+    src: url(/fonts/modernpics.otf);
+}
+
+@font-face {
+    font-family: 'Ubuntu';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Ubuntu'), url(/fonts/ubuntu.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+
+
+
+
+@mixin no-select {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+
+.hidden {
+    display: none;
+}
+
+.calendar {
+    table {
+        border-collapse: collapse;
+        }
+    td, th
+    {
+        border: 1px solid #000;
+        text-align: center;
+        padding: 10px;
+        background-color: #DDDDFF;
+    }
+    
+    td.out-of-month {
+        background-color: #FFF;
+    }
+    td.events {
+        font-weight: bold;
+        background-color: #BBBBFF;
+        cursor: pointer;
+    }
+    
+    form.calendar {
+        float: left;
+    }
+    
+    .details-container {
+        right: 50px;
+        float: right;
+        position: fixed;
+    }
+    
+    .details {
+        width: 300px;
+        background: #FFFFCC;
+        border: 1px solid #FF0000;
+    }
+    
+    .details span {
+        display: block;
+    }
+    
+    .details .title {
+        text-align: center;
+        font-size: 15px;
+    }
+}
+
+.tree {
+    $textSize: 1em;
+
+    $size: $textSize * 2.5;
+    
+    border: 1px solid red;
+    padding: 0;
+    margin: 0;
+    ol, ul, li {
+        white-space: nowrap;
+        padding: 0;
+        margin: 0;
+    }
+    .name {
+        //vertical-align: middle;
+        span {
+            display: table-cell;
+            vertical-align: middle;
+            height: $size * .7;
+        }
+        height: $size * .7;
+        font-size: $textSize;
+        font-family: Ubuntu;
+    }
+    //font-size: $size;
+    li {
+        display: block;
+    }
+
+    span {
+        white-space: nowrap;
+        vertical-align: top;
+        display: inline-block;
+        padding: 0;
+        margin: 0;
+    }
+
+    .row {
+        display: block;
+        background-color: #DDDDFF;
+    }
+    
+    .branch {
+        @include no-select;
+        width: $size * .7;
+        height: $size * .7;
+        $line-border: 1px dotted #000000;
+        .icon {
+            cursor: pointer;
+            position: relative;
+            top: 0 - ($size * 0.05);
+            left: 0;
+            font-family: modernpics;
+            font-size: $size;
+        }
+        $midPoint: $size * 0.35;
+
+        .line {
+            position: relative;
+            overflow: hidden;
+            &.top {
+                top: $size * .5;
+                left: $midPoint;
+                width: 0;
+                border-left: $line-border;
+                height: $size * .5;
+            }
+            
+            &.bottom {
+                left: $midPoint;
+                width: 0;
+                border-left: $line-border;
+                height: $midPoint;
+            }
+            
+            &.through {
+                left: $midPoint;
+                width: 0;
+                border-left: $line-border;
+                height: $size;
+            }
+            
+            &.node {
+                left: $midPoint;
+                top: $midPoint;
+                width: $midPoint;
+                border-top: $line-border;
+                height: 0;
+            }
+        }
+    }
+}

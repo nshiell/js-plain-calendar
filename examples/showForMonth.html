@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8" />
+    <title>Show Salendar For Month</title>
+    <base href="../" />
+    <script type="text/javascript" src="js/nshiell-js-plain-calendar.js"></script>
+    <!-- Build the css files from the scs files and include them -->
+    <link rel="stylesheet" type="text/css" href="css/nshiell-js-plain-calendar.css" />
+
+</head>
+<body>
+
+<form action="#" onsubmit="
+(function ($form) {
+    // Tear down exsisting calendar
+    $form.querySelector('.calendar').innerHTML = '';
+
+    // Get data from form
+    var year       = $form.querySelector('input[name=\'year\']').value;
+    var month      = $form.querySelector('select[name=\'month\']').selectedIndex;
+    var startOnDay = $form.querySelector('select[name=\'startOnDay\']').selectedIndex;
+    var $container = $form.querySelector('.calendar');
+
+    var today = new Date(
+        year,
+        month,
+        1);
+
+    new Month(
+        today,
+        startOnDay,
+        null,
+        $container);
+})(this);
+return false"
+>
+    <div style="background-color: yellow; border: 1px solid black; margin: 0 200px; height: 50px">
+        <span style="background-color: grey; color: white; padding: 10px; float: left">
+            <label>Start On Day</label>
+            <select name="startOnDay">
+                <option>Sunday</option>
+                <option>Monday</option>
+                <option>Tuesday</option>
+                <option>Wednesday</option>
+                <option>Thursday</option>
+                <option>Friday</option>
+                <option>Saturday</option>
+            </select>
+        </span>
+
+        <div style="background-color: blue; color: white; padding: 10px; width: 300px; float: left">
+            <span>
+                <label>Month</label>
+                <select name="month">
+                    <option>January</option>
+                    <option>Febuary</option>
+                    <option>March</option>
+                    <option>April</option>
+                    <option>May</option>
+                    <option>June</option>
+                    <option>July</option>
+                    <option>August</option>
+                    <option>September</option>
+                    <option>October</option>
+                    <option>November</option>
+                    <option>December</option>
+                </select>
+            </span>
+
+            <span>
+                <label>Year</label>
+                <input name="year" type="number" min="0" max="9999" value="1970" />
+            </span>
+        </div>
+        <input type="submit" value="Show Calendar" style="float: right; font-size: 30px" />
+    </div>
+    <div class="calendar" style="
+    border-left: 5px solid black;
+    border-top: 5px solid black;
+    border-bottom: 5px solid #FFFFCC;
+    border-right: 5px solid #FFFFCC;
+    height: 220px;
+    padding: 20px;
+    background-color:silver;
+    background-image: 
+    radial-gradient(circle at 100% 150%, silver 24%, white 25%, white 28%, silver 29%, silver 36%, white 36%, white 40%, transparent 40%, transparent),
+    radial-gradient(circle at 0    150%, silver 24%, white 25%, white 28%, silver 29%, silver 36%, white 36%, white 40%, transparent 40%, transparent),
+    radial-gradient(circle at 50%  100%, white 10%, silver 11%, silver 23%, white 24%, white 30%, silver 31%, silver 43%, white 44%, white 50%, silver 51%, silver 63%, white 64%, white 71%, transparent 71%, transparent),
+    radial-gradient(circle at 100% 50%, white 5%, silver 6%, silver 15%, white 16%, white 20%, silver 21%, silver 30%, white 31%, white 35%, silver 36%, silver 45%, white 46%, white 49%, transparent 50%, transparent),
+    radial-gradient(circle at 0    50%, white 5%, silver 6%, silver 15%, white 16%, white 20%, silver 21%, silver 30%, white 31%, white 35%, silver 36%, silver 45%, white 46%, white 49%, transparent 50%, transparent);
+    background-size:100px 50px"></div>
+</form>
+
+</body>
+</html>
