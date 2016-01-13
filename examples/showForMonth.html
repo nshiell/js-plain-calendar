@@ -11,6 +11,9 @@
 </head>
 <body>
 
+
+
+
 <form action="#" onsubmit="
 (function ($form) {
     // Tear down exsisting calendar
@@ -20,6 +23,7 @@
     var year       = $form.querySelector('input[name=\'year\']').value;
     var month      = $form.querySelector('select[name=\'month\']').selectedIndex;
     var startOnDay = $form.querySelector('select[name=\'startOnDay\']').selectedIndex;
+
     var $container = $form.querySelector('.calendar');
 
     var today = new Date(
@@ -27,27 +31,27 @@
         month,
         1);
 
-    new Month(
-        today,
-        startOnDay,
-        null,
-        $container);
+    new Month(today).drawCalendar(
+        $container,
+        startOnDay);
 })(this);
 return false"
 >
     <div style="background-color: yellow; border: 1px solid black; margin: 0 200px; height: 50px">
-        <span style="background-color: grey; color: white; padding: 10px; float: left">
-            <label>Start On Day</label>
-            <select name="startOnDay">
-                <option>Sunday</option>
-                <option>Monday</option>
-                <option>Tuesday</option>
-                <option>Wednesday</option>
-                <option>Thursday</option>
-                <option>Friday</option>
-                <option>Saturday</option>
-            </select>
-        </span>
+        <div style="background-color: grey; color: white; padding: 10px; float: left">
+            <span>
+                <label>Start On Day</label>
+                <select name="startOnDay">
+                    <option>Sunday</option>
+                    <option>Monday</option>
+                    <option>Tuesday</option>
+                    <option>Wednesday</option>
+                    <option>Thursday</option>
+                    <option>Friday</option>
+                    <option>Saturday</option>
+                </select>
+            </span>
+        </div>
 
         <div style="background-color: blue; color: white; padding: 10px; width: 300px; float: left">
             <span>

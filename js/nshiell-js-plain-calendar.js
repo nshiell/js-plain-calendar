@@ -14,7 +14,6 @@ function Month(today) {
  */
 Month.prototype.drawCalendar = function ($output, startOnDay, events, showDateFunction, dayLocale) {
     var selectedEvents = [];
-
     var dayNames = (function (today) {
         if (dayLocale instanceof Array) {
             if (dayLocale.length < 7) {
@@ -77,19 +76,44 @@ Month.prototype.drawCalendar = function ($output, startOnDay, events, showDateFu
         daysToAppend-= 7;
     }
     
-    var calendarTable = document.createElement('table');
-
+    var isHTml = $output.appendChild;
+    
+    
+    // START
     var days = (startOnDay)
         ? [].concat(dayNames.slice(startOnDay), dayNames.slice(0, startOnDay))
         : dayNames;
 
-    var header = document.createElement('tr');
-    calendarTable.appendChild(header);
-    for (var i in days) {
-        var cell = document.createElement('th');
-        cell.appendChild(document.createTextNode(days[i]));
-        header.appendChild(cell);
+    // Headers
+    if (isHTml) {
+        var calendarTable = document.createElement('table');
+        
+        var header = document.createElement('tr');
+        calendarTable.appendChild(header);
+        for (var i in days) {
+            var cell = document.createElement('th');
+            cell.appendChild(document.createTextNode(days[i]));
+            header.appendChild(cell);
+        }
+    } else {
+        var cellWidth = 12;
+        var header0 = [];
+        var headers = [];
+        days.forEach(function(e) {
+            var cell = $output.padText(e, cellWidth);
+            header0.push($output.getHorizontalLine(cell));
+            headers.push(cell);
+        });
+
+        $output.drawRow(headers, header0, true);
     }
+    
+    
+    
+    
+    
+    
+    
     
     function getEventsForDate(epochDate) {
         var eventsForDate = [];
@@ -150,8 +174,43 @@ Month.prototype.drawCalendar = function ($output, startOnDay, events, showDateFu
         
         return row;
     }
+    
+    function cellDrawerCli(date, i, row, type) {
+        if (!(i % 7)) {
+            if (row.length) {
+                $output.drawRow(row, header0);
+            }
+            row = [];
+        }
+        var epochDate = epochToday + ((date - 1) * 86400);
+        
+        var eventsForDate = getEventsForDate(epochDate);
+        // ?? events
+        var date1 = date+'';
+        
+        //cell.appendChild(document.createTextNode(date));
+        
+        if (type) {
+            date1 = '.' + date + '.';
+            //cell.className = 'out-of-month';
+        }
+        if (eventsForDate.length) {
+            date1 = '{' + date + '}';
+            //cell.className+= ' events';
+        }
 
-    var row = null;
+        var date1 = $output.padText(date1, cellWidth);
+        row.push(date1);
+        
+        return row;
+    }
+
+    if (isHTml) {
+        var row = null;
+    } else {
+        cellDrawer = cellDrawerCli;
+        var row = [];
+    }
     var addExtraRow = false;
     
     if (daysToPrepend + 1 < 1) {
@@ -173,7 +232,7 @@ Month.prototype.drawCalendar = function ($output, startOnDay, events, showDateFu
             if (!(i % 7)) {
                 break;
             }
-            var type = 2;this.
+            var type = 2;
             date = (date - lengthOfMonth - daysToPrepend) + 1;
         } else {
             date-= daysToPrepend - 1;
@@ -182,6 +241,18 @@ Month.prototype.drawCalendar = function ($output, startOnDay, events, showDateFu
 
         row = cellDrawer(date, i, row, type);
     }
+
     
-    $output.appendChild(calendarTable);
+    
+    
+    if (isHTml) {
+        $output.appendChild(calendarTable);
+    } else {
+        $output.drawRow(row, header0);
+        $output.drawRowFooter(header0);
+    }
+}
+
+if (typeof module !== 'undefined' && module.exports !== 'undefined') {
+    module.exports = Month;
 }
