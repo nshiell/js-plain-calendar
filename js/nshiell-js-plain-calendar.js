@@ -1,11 +1,46 @@
-var selectedEvents = [];
+/**
+ * @param Date             today    1st of the month
+ */
+function Month(today) {
+    this.today = today;
+}
 
-function Month(today, startOnDay, events, $output, showDateFunction) {
-    var epochToday = today.getTime()/1000|0;
-    
+/**
+ * @param DomObject           $output          The object to draw the calendar to (with events)
+ * @param Number|undefined    startOnDay       0 - Sunday, 1 - Monday...
+ * @param []|undefined        events           Events for dates
+ * @param function|undefined  showDateFunction Function to call for show hiding events for date
+ * @param String|[]|undefined dayLocale        'en_GB' | ['Mon', Tues'...] | or Use Browser locale
+ */
+Month.prototype.drawCalendar = function ($output, startOnDay, events, showDateFunction, dayLocale) {
+    var selectedEvents = [];
+
+    var dayNames = (function (today) {
+        if (dayLocale instanceof Array) {
+            if (dayLocale.length < 7) {
+                throw 'dayLocale is < 7 elements';
+            }
+            return dayLocale;
+        }
+
+        var days = [];
+        var firstDayNo = null;
+        for (var i = 0; i < 7; i++) {
+            if (firstDayNo === null) {
+                firstDayNo = today.getDay();
+            }
+            today.setDate(today.getDate() + 1);
+            var day = today.toLocaleString(dayLocale, { weekday: "long" });
+            days.push(day);
+        }
+        return days.slice(6 - firstDayNo).concat(days.slice(0, 6 - firstDayNo));
+    })(this.today);
+
+    var epochToday = this.today.getTime()/1000|0;
+
     var monthLengths = [
         /*jan*/ 31,
-        /*feb*/ (today.getFullYear() % 4) ? 28 : 29,
+        /*feb*/ (this.today.getFullYear() % 4) ? 28 : 29,
         /*mar*/ 31,
         /*apr*/ 30,
         /*may*/ 31,
@@ -18,13 +53,13 @@ function Month(today, startOnDay, events, $output, showDateFunction) {
         /*dec*/ 31];
     // Sunday is day "0"
     // date 1 = 1
-    var lengthOfMonth = monthLengths[today.getMonth()];
+    var lengthOfMonth = monthLengths[this.today.getMonth()];
 
     if (!startOnDay) {
         startOnDay = 0;
     }
-    var daysToPrepend = today.getDay() - (today.getDate() % 7) + 1 - startOnDay;
-    var lastMonth = today.getMonth() - 1;
+    var daysToPrepend = this.today.getDay() - (this.today.getDate() % 7) + 1 - startOnDay;
+    var lastMonth = this.today.getMonth() - 1;
     if (lastMonth == -1) {
         lastMonth = 11;
     }
@@ -43,17 +78,11 @@ function Month(today, startOnDay, events, $output, showDateFunction) {
     }
     
     var calendarTable = document.createElement('table');
-    
-    
-    
-    var dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-    
+
     var days = (startOnDay)
         ? [].concat(dayNames.slice(startOnDay), dayNames.slice(0, startOnDay))
         : dayNames;
-    
-    days = days.map(function (day) {return day.charAt(0).toUpperCase() + day.substr(1)});
-    
+
     var header = document.createElement('tr');
     calendarTable.appendChild(header);
     for (var i in days) {
@@ -92,13 +121,17 @@ function Month(today, startOnDay, events, $output, showDateFunction) {
         var cell = document.createElement('td');
 
         cell.onmouseover = function () {
-            if (eventsForDate.length) {
+            if (eventsForDate.length && showDateFunction) {
                 showDateFunction(eventsForDate);
             }
         };
-        cell.onmouseout = function () {showDateFunction(selectedEvents)};
+        cell.onmouseout = function () {
+            if (showDateFunction) {
+                showDateFunction(selectedEvents)
+            }
+        };
         cell.onclick = function () {
-            if (eventsForDate.length) {
+            if (eventsForDate.length && showDateFunction) {
                 selectedEvents = eventsForDate;
                 showDateFunction(eventsForDate);
             }
@@ -140,7 +173,7 @@ function Month(today, startOnDay, events, $output, showDateFunction) {
             if (!(i % 7)) {
                 break;
             }
-            var type = 2;
+            var type = 2;this.
             date = (date - lengthOfMonth - daysToPrepend) + 1;
         } else {
             date-= daysToPrepend - 1;
