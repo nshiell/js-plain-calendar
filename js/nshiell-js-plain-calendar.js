@@ -100,8 +100,9 @@ Month.prototype.drawCalendar = function ($output, startOnDay, events, showDateFu
         var header0 = [];
         var headers = [];
         days.forEach(function(e) {
-            var cell = $output.padText(e, cellWidth);
-            header0.push($output.getHorizontalLine(cell));
+            var cell = $output.padText(e, cellWidth, 'BOLD');
+            header0.push($output.getHorizontalLine(cell.replace(
+                /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '')));
             headers.push(cell);
         });
 
@@ -190,8 +191,10 @@ Month.prototype.drawCalendar = function ($output, startOnDay, events, showDateFu
         
         //cell.appendChild(document.createTextNode(date));
         
+        var style = 'BOLD';
         if (type) {
-            date1 = '.' + date + '.';
+            style = '';
+            //date1 = '.' + date + '.';
             //cell.className = 'out-of-month';
         }
         if (eventsForDate.length) {
@@ -199,7 +202,7 @@ Month.prototype.drawCalendar = function ($output, startOnDay, events, showDateFu
             //cell.className+= ' events';
         }
 
-        var date1 = $output.padText(date1, cellWidth);
+        var date1 = $output.padText(date1, cellWidth, style);
         row.push(date1);
         
         return row;

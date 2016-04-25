@@ -36,13 +36,18 @@ function commandLineOutputer() {
         console.log(BL + borderCellParts.join(HU) + BR);
     }
 
-    this.padText = function (text, cellWidth) {
+    this.padText = function (text, cellWidth, style) {
         text = text + '';
         var padding = (cellWidth - text.length) / 2;
-        return spaces.substring(0, Math.floor(padding))
+        
+        var prefix = (style) ? '\033[1m' : '';
+        var suffix = (style) ? '\033[m' : '';
+        
+        return prefix
+            + spaces.substring(0, Math.floor(padding))
             + text
-            //+ '\033[1;31;43m' + text + '\033[m';
-            + spaces.substring(0, Math.ceil(padding));
+            + spaces.substring(0, Math.ceil(padding))
+            + suffix;
     }
 
     this.getHorizontalLine = function(text) {
