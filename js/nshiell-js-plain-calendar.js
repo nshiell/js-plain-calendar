@@ -1,3 +1,5 @@
+/* jshint asi: true */
+
 /**
  * @param Date             today    1st of the month
  */
@@ -15,6 +17,7 @@ function Month(today) {
 Month.prototype.drawCalendar = function ($output, startOnDay, events, showDateFunction, dayLocale) {
     var selectedEvents = [];
     var dayNames = (function (today) {
+        var todayCopy = new Date(today.getTime())
         if (dayLocale instanceof Array) {
             if (dayLocale.length < 7) {
                 throw 'dayLocale is < 7 elements';
@@ -26,16 +29,20 @@ Month.prototype.drawCalendar = function ($output, startOnDay, events, showDateFu
         var firstDayNo = null;
         for (var i = 0; i < 7; i++) {
             if (firstDayNo === null) {
-                firstDayNo = today.getDay();
+                firstDayNo = todayCopy.getDay();
             }
-            today.setDate(today.getDate() + 1);
-            var day = today.toLocaleString(dayLocale, { weekday: "long" });
+            todayCopy.setDate(todayCopy.getDate() + 1);
+            var day = todayCopy.toLocaleString(dayLocale, { weekday: "long" });
             days.push(day);
         }
         return days.slice(6 - firstDayNo).concat(days.slice(0, 6 - firstDayNo));
     })(this.today);
-
-    var epochToday = this.today.getTime()/1000|0;
+    //var epochToday = this.today.getTime()/1000|0;
+    var epochFirstOfMonth = (this.today.getTime()/1000|0) - (
+        (this.today.getDate() - 1) * 86400
+    ) - this.today.getSeconds() -
+        (this.today.getMinutes() * 60) -
+        (this.today.getHours() * 3600)
 
     var monthLengths = [
         /*jan*/ 31,
@@ -118,7 +125,7 @@ Month.prototype.drawCalendar = function ($output, startOnDay, events, showDateFu
     
     function getEventsForDate(epochDate) {
         var eventsForDate = [];
-        for (var j in events) {
+        /*for (var j in events) {
             var event = events[j];
             if (event.dateStart) {
                 if (event.dateStart < epochDate + 86400) {
@@ -129,20 +136,31 @@ Month.prototype.drawCalendar = function ($output, startOnDay, events, showDateFu
                     }
                 }
             }
-        }
+        }*/
+        events.forEach(function (event) {
+            //console.log(epochDate + 86400)
+            if (event.dateStart) {
+                if (event.dateStart < epochDate + 86400) {
+                    if (!event.dateEnd) {
+                        eventsForDate.push(event);
+                    } else if (event.dateEnd > epochDate) {
+                        eventsForDate.push(event);
+                    }
+                }
+            }
+        })
 
         return eventsForDate;
     }
     
-    function cellDrawer(date, i, row, type) {
+    function cellDrawer(epochDate, date, i, row, type) {
         if (!(i % 7)) {
             row = document.createElement('tr');
             calendarTable.appendChild(row);
         }
-        var epochDate = epochToday + ((date - 1) * 86400);
-        
+        //console.log([date, i, row, type])
+        //var epochDate = epochFirstOfMonth + ((date - 1) * 86400);
         var eventsForDate = getEventsForDate(epochDate);
-        
         var cell = document.createElement('td');
 
         cell.onmouseover = function () {
@@ -150,7 +168,7 @@ Month.prototype.drawCalendar = function ($output, startOnDay, events, showDateFu
                 showDateFunction(eventsForDate);
             }
         };
-        cell.onmouseout = function () {
+        /*cell.onmouseout = function () {
             if (showDateFunction) {
                 showDateFunction(selectedEvents)
             }
@@ -160,7 +178,7 @@ Month.prototype.drawCalendar = function ($output, startOnDay, events, showDateFu
                 selectedEvents = eventsForDate;
                 showDateFunction(eventsForDate);
             }
-        };
+        };*/
 
         cell.appendChild(document.createTextNode(date));
         
@@ -175,8 +193,9 @@ Month.prototype.drawCalendar = function ($output, startOnDay, events, showDateFu
         
         return row;
     }
-    
+
     function cellDrawerCli(date, i, row, type) {
+        throw 'Not working yet!'
         if (!(i % 7)) {
             if (row.length) {
                 $output.drawRow(row, header0);
@@ -208,19 +227,17 @@ Month.prototype.drawCalendar = function ($output, startOnDay, events, showDateFu
         return row;
     }
 
-    if (isHTml) {
-        var row = null;
-    } else {
+    var row = null;
+    if (!isHTml) {
         cellDrawer = cellDrawerCli;
-        var row = [];
+        row = [];
     }
     var addExtraRow = false;
     
     if (daysToPrepend + 1 < 1) {
         addExtraRow = true;
     }
-    
-    
+
     for (var i = 0; true; i++) {
         var date = i;
 
@@ -228,21 +245,28 @@ Month.prototype.drawCalendar = function ($output, startOnDay, events, showDateFu
             date-= 7;
         }
 
+        var epochDate = epochFirstOfMonth
+
+        var type = null
         if (date < daysToPrepend) {
-            var type = 1;
+            type = 1;
             date = lastMonthLength - daysToPrepend + date + 1;
+            epochDate-= ((lastMonthLength - date) + 1) * 86400
         } else if (date - daysToPrepend + 1 > lengthOfMonth) {
-            if (!(i % 7)) {
+            if (i % 7 == 0) {
                 break;
             }
-            var type = 2;
+            type = 2;
             date = (date - lengthOfMonth - daysToPrepend) + 1;
+            epochDate+= (lengthOfMonth + date - 1) * 86400
+            console.log(epochDate)
         } else {
             date-= daysToPrepend - 1;
-            var type = 0;
+            type = 0;
+            epochDate+= (date - 1) * 86400
         }
 
-        row = cellDrawer(date, i, row, type);
+        row = cellDrawer(epochDate, date, i, row, type)
     }
 
     
