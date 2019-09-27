@@ -37,7 +37,7 @@ Month.prototype.getEventsForDate = function (date) {
  * @param String|[]|undefined dayLocale        'en_GB' | ['Mon', Tues'...] | or Use Browser locale
  */
 Month.prototype.drawCalendar = function ($output, startOnDay, events, showDateFunction, dayLocale) {
-    this.events = events
+    this.events = (events) ? events : []
     var selectedEvents = [];
     var dayNames = (function (today) {
         var todayCopy = new Date(today.getTime())
@@ -86,6 +86,8 @@ Month.prototype.drawCalendar = function ($output, startOnDay, events, showDateFu
 
     if (!startOnDay) {
         startOnDay = 0;
+    } else if (startOnDay > 6) {
+        startOnDay = 6
     }
     var daysToPrepend = this.today.getDay() - (this.today.getDate() % 7) + 1 - startOnDay;
     var lastMonth = this.today.getMonth() - 1;
@@ -140,7 +142,7 @@ Month.prototype.drawCalendar = function ($output, startOnDay, events, showDateFu
     }
     
     var _this = this
-    
+
     function cellDrawer(epochDate, date, i, row, type) {
         if (i % 7 == 0) {
             row = document.createElement('tr');
@@ -152,19 +154,19 @@ Month.prototype.drawCalendar = function ($output, startOnDay, events, showDateFu
         var cell = document.createElement('td');
 
         cell.onmouseover = function () {
-            if (eventsForDate.length && showDateFunction) {
-                showDateFunction(eventsForDate);
+            if (showDateFunction) {
+                showDateFunction(eventsForDate, 'mouseover', cell)
             }
         };
         cell.onmouseout = function () {
             if (showDateFunction) {
-                showDateFunction(selectedEvents)
+                showDateFunction(selectedEvents, 'mouseout', cell)
             }
         };
         cell.onclick = function () {
-            if (eventsForDate.length && showDateFunction) {
+            if (showDateFunction) {
                 selectedEvents = eventsForDate;
-                showDateFunction(eventsForDate);
+                showDateFunction(eventsForDate, 'click', cell);
             }
         };
 
@@ -177,6 +179,18 @@ Month.prototype.drawCalendar = function ($output, startOnDay, events, showDateFu
         }
         if (eventsForDate.length) {
             cell.className+= ' events';
+        }
+        var mod7 = i % 7
+
+        // if refactoring make sure 'startOnDay' is still in scope
+        console.log(startOnDay)
+        var isWeekend =
+            (mod7 == 6 - startOnDay) ||
+            (mod7 == 7 - startOnDay) ||
+            (mod7 == 0 && !startOnDay)
+
+        if (isWeekend) {
+            cell.className+= ' weekend';
         }
         
         row.appendChild(cell);
