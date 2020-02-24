@@ -180,10 +180,10 @@ Month.prototype.drawCalendar = function ($output, startOnDay, events, showDateFu
         if (eventsForDate.length) {
             cell.className+= ' events';
         }
+        cell.className+= ' day-' + i;
         var mod7 = i % 7
 
         // if refactoring make sure 'startOnDay' is still in scope
-        console.log(startOnDay)
         var isWeekend =
             (mod7 == 6 - startOnDay) ||
             (mod7 == 7 - startOnDay) ||
